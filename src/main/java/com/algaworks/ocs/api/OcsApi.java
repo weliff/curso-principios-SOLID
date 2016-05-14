@@ -7,6 +7,7 @@ import com.algaworks.ocs.cdr.CDRFileLocator;
 import com.algaworks.ocs.cdr.CDRGenerator;
 import com.algaworks.ocs.log.ApiLogger;
 import com.algaworks.ocs.model.Cliente;
+import com.algaworks.ocs.service.ClienteService;
 
 public class OcsApi {
 
@@ -16,32 +17,20 @@ public class OcsApi {
 	private CDRGenerator cdrGenerator;
 	private CDRFileLocator cdrFileLocator;
 	
+	private Autorizavel autorizavel;
+	
 	public OcsApi(CDRGenerator cdrGenerator, CDRFileLocator cdrFileLocator) {
-		this.logger = new ApiLogger();
 		this.clientes = new Clientes();
 		
 		this.cdrFileLocator = cdrFileLocator;
 		this.cdrGenerator = cdrGenerator;
+		autorizavel = new ClienteService(clientes);
+		this.logger = new ApiLogger(autorizavel);
+		
 	}
 
 	public Ligacao autorizar(String numero) {
-		logger.autorizandoLigacao(numero);
-		Cliente cliente = getCliente(numero);
-		double saldo = cliente.getSaldo();
-		double tarifa = cliente.getTarifa().getValor();
-		
-		boolean autorizada;
-		double tempoPermitido = -1;
-		if (saldo > 0) {
-			autorizada = true;
-			tempoPermitido = (saldo / tarifa) * 60;
-			logger.ligacaoAutorizada(numero, tempoPermitido);
-		} else {
-			autorizada = false;
-			logger.ligacaoNegada(numero);
-		}
-
-		return new Ligacao(autorizada, tempoPermitido);
+		return autorizavel.autorizar(numero);
 	}
 
 	public void finalizar(String numero, double tempo) {

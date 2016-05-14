@@ -10,6 +10,10 @@ public class Ligacao {
 		this.tempo = tempo;
 	}
 
+	public Ligacao(boolean autorizada) {
+		this.autorizada = autorizada;
+	}
+
 	public boolean isAutorizada() {
 		return autorizada;
 	}

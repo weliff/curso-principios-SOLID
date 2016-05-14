@@ -2,11 +2,33 @@ package com.algaworks.ocs.log;
 
 import org.apache.log4j.Logger;
 
+import com.algaworks.ocs.api.Autorizavel;
+import com.algaworks.ocs.api.Ligacao;
 import com.algaworks.ocs.api.OcsApi;
 
-public class ApiLogger {
+public class ApiLogger implements Autorizavel{
 	
 	private static final Logger logger = Logger.getLogger(OcsApi.class);
+	private Autorizavel autorizavel;
+	
+	public ApiLogger(Autorizavel autorizavel) {
+		this.autorizavel = autorizavel;
+	}
+	
+	@Override
+	public Ligacao autorizar(String numero) {
+		logger.info(String.format("Autorizando ligação para o número: %s", numero));
+		
+		Ligacao ligacao = autorizavel.autorizar(numero);
+		if (ligacao.isAutorizada()) {
+			logger.info(String.format("Tempo permitido, em segundos, para número %s é %.2f", numero, ligacao.getTempo()));
+		} else {
+			logger.info(String.format("Número %s não tem saldo suficiente para completar ligação.", numero));
+
+		}
+		return ligacao;
+	}
+	
 	
 	public void autorizandoLigacao(String numero) {
 		logger.info(String.format("Autorizando ligação para o número: %s", numero));
@@ -27,5 +49,6 @@ public class ApiLogger {
 	public void chamadaFinalizada(double valorLigacao, String numero) {
 		logger.info(String.format("Chamada finalizada e débito efetuado no valor de R$%.2f para número %s", valorLigacao, numero));
 	}
+
 
 }
