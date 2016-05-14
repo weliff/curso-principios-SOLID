@@ -1,6 +1,9 @@
 package com.algaworks.ocs.api;
 
+import java.io.File;
+
 import com.algaworks.ocs.api.repository.Clientes;
+import com.algaworks.ocs.cdr.CDRFileLocator;
 import com.algaworks.ocs.cdr.CDRGenerator;
 import com.algaworks.ocs.log.ApiLogger;
 import com.algaworks.ocs.model.Cliente;
@@ -48,9 +51,16 @@ public abstract class OcsApi {
 		getCdrGenerator().gerar(numero, tempo, valorLigacao);
 	}
 	
+	public File getCdrFile(String numero) {
+		return getCdrFileLocator().getFile(numero);
+	}
+	
+
 	private Cliente getCliente(String numero) {
 		return clientes.porNumero(numero);
 	}
 	
 	public abstract CDRGenerator getCdrGenerator();
+
+	public abstract CDRFileLocator getCdrFileLocator();
 }
