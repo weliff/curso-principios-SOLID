@@ -8,14 +8,20 @@ import com.algaworks.ocs.cdr.CDRGenerator;
 import com.algaworks.ocs.log.ApiLogger;
 import com.algaworks.ocs.model.Cliente;
 
-public abstract class OcsApi {
+public class OcsApi {
 
 	private ApiLogger logger;
 	private Clientes clientes;
-
-	public OcsApi() {
+	
+	private CDRGenerator cdrGenerator;
+	private CDRFileLocator cdrFileLocator;
+	
+	public OcsApi(CDRGenerator cdrGenerator, CDRFileLocator cdrFileLocator) {
 		this.logger = new ApiLogger();
 		this.clientes = new Clientes();
+		
+		this.cdrFileLocator = cdrFileLocator;
+		this.cdrGenerator = cdrGenerator;
 	}
 
 	public Ligacao autorizar(String numero) {
@@ -48,11 +54,11 @@ public abstract class OcsApi {
 		cliente.setSaldo(saldo);
 		clientes.guardar(cliente);
 		logger.chamadaFinalizada(valorLigacao, numero);
-		getCdrGenerator().gerar(numero, tempo, valorLigacao);
+		cdrGenerator.gerar(numero, tempo, valorLigacao);
 	}
 	
 	public File getCdrFile(String numero) {
-		return getCdrFileLocator().getFile(numero);
+		return cdrFileLocator.getFile(numero);
 	}
 	
 
@@ -60,7 +66,4 @@ public abstract class OcsApi {
 		return clientes.porNumero(numero);
 	}
 	
-	public abstract CDRGenerator getCdrGenerator();
-
-	public abstract CDRFileLocator getCdrFileLocator();
 }
