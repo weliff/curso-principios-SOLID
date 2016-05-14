@@ -5,11 +5,17 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
-public class CDRGeneratorFile {
+public class CDRGeneratorFile implements CDRGenerator {
 	
+	private String pastaCdr;
 	
-	public void gerar(File file, String numero, double tempo, double valorLigacao) {
-		
+	public CDRGeneratorFile(String pastaCdr) {
+		this.pastaCdr = pastaCdr;
+	}
+	
+	@Override
+	public void gerar(String numero, double tempo, double valorLigacao) {
+		File file = getFile(numero);
 		try (PrintStream printStream = new PrintStream(new FileOutputStream(file, true))) {
 			printStream.println(numero + ":" + tempo + ":" + valorLigacao);
 		} catch (FileNotFoundException e) {
@@ -17,7 +23,8 @@ public class CDRGeneratorFile {
 		}
 	}
 
-	public File getFile(String numero, String pastaCdr) {
+	@Override
+	public File getFile(String numero) {
 		return new File(pastaCdr + File.pathSeparator + numero);
 	}
 	
