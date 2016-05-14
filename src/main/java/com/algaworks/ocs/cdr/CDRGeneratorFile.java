@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
-public class CDRGenerator {
+public class CDRGeneratorFile {
 	
 	
 	public void gerar(File file, String numero, double tempo, double valorLigacao) {
@@ -15,6 +15,10 @@ public class CDRGenerator {
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException("Erro salvando arquivo cdr", e);
 		}
+	}
+
+	public File getFile(String numero, String pastaCdr) {
+		return new File(pastaCdr + File.pathSeparator + numero);
 	}
 	
 }
