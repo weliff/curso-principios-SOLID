@@ -1,16 +1,19 @@
 package com.algaworks.ocs.service;
 
 import com.algaworks.ocs.api.Autorizavel;
+import com.algaworks.ocs.api.Finalizavel;
 import com.algaworks.ocs.api.Ligacao;
 import com.algaworks.ocs.api.repository.Clientes;
 import com.algaworks.ocs.model.Cliente;
 
-public class ClienteService implements Autorizavel{
+public class ClienteService implements Autorizavel, Finalizavel {
 	
 	private Clientes clientes;
+	private Finalizavel finalizavel;
 	
-	public ClienteService(Clientes clientes) {
+	public ClienteService(Clientes clientes, Finalizavel finalizavel) {
 		this.clientes = clientes;
+		this.finalizavel = finalizavel;
 	}
 
 	@Override
@@ -22,11 +25,26 @@ public class ClienteService implements Autorizavel{
 		}
 		return new Ligacao(false);
 	}
+	
+	@Override
+	public void finalizar(Cliente cliente, double tempo) {
+		atualizarSaldoCliente(cliente, tempo);
+		finalizavel.finalizar(cliente, tempo);
+	}
 
+	private void atualizarSaldoCliente(Cliente cliente, double tempo) {
+		double saldo = cliente.getSaldo();
+		double valorLigacao = cliente.getTarifa().calcularValorLigacao(tempo);
+		saldo -= valorLigacao;
+		cliente.setSaldo(saldo);
+		clientes.guardar(cliente);
+	}
+	
 	private Ligacao criarLigacaoAutorizada(Cliente cliente) {
 		double tempoPermitido = (cliente.getSaldo() / cliente.getTarifa().getValor()) * 60;
 		return new Ligacao(true, tempoPermitido);
 	}
+
 	
 
 }

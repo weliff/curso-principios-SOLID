@@ -2,7 +2,9 @@ package com.algaworks.ocs.cdr;
 
 import java.io.File;
 
-public interface CDRFileLocator {
+import com.algaworks.ocs.api.Finalizavel;
+
+public interface CDRFileLocator extends Finalizavel{
 	
 	File getFile(String numero);
 }

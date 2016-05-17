@@ -3,16 +3,20 @@ package com.algaworks.ocs.log;
 import org.apache.log4j.Logger;
 
 import com.algaworks.ocs.api.Autorizavel;
+import com.algaworks.ocs.api.Finalizavel;
 import com.algaworks.ocs.api.Ligacao;
 import com.algaworks.ocs.api.OcsApi;
+import com.algaworks.ocs.model.Cliente;
 
-public class ApiLogger implements Autorizavel{
+public class ApiLogger implements Autorizavel, Finalizavel{
 	
 	private static final Logger logger = Logger.getLogger(OcsApi.class);
 	private Autorizavel autorizavel;
+	private Finalizavel finalizavel;
 	
-	public ApiLogger(Autorizavel autorizavel) {
+	public ApiLogger(Autorizavel autorizavel, Finalizavel finalizavel) {
 		this.autorizavel = autorizavel;
+		this.finalizavel = finalizavel;
 	}
 	
 	@Override
@@ -29,26 +33,12 @@ public class ApiLogger implements Autorizavel{
 		return ligacao;
 	}
 	
-	
-	public void autorizandoLigacao(String numero) {
-		logger.info(String.format("Autorizando ligação para o número: %s", numero));
+	@Override
+	public void finalizar(Cliente cliente, double tempo) {
+		logger.info(String.format("Finalizando ligação para número %s que falou por %.2f segundos", cliente.getNumero(), tempo));
+		finalizavel.finalizar(cliente, tempo);
+		logger.info(String.format("Chamada finalizada e débito efetuado no valor de R$%.2f para número %s", cliente.getTarifa().calcularValorLigacao(tempo),
+				cliente.getNumero()));
 	}
 	
-	public void ligacaoAutorizada(String numero, double tempoPermitido) {
-		logger.info(String.format("Tempo permitido, em segundos, para número %s é %.2f", numero, tempoPermitido));
-	}
-	
-	public void ligacaoNegada(String numero) {
-		logger.info(String.format("Número %s não tem saldo suficiente para completar ligação.", numero));
-	}
-	
-	public void finalizandoLigacao (String numero, double tempo) {
-		logger.info(String.format("Finalizando ligação para número %s que falou por %.2f segundos", numero, tempo));
-	}
-	
-	public void chamadaFinalizada(double valorLigacao, String numero) {
-		logger.info(String.format("Chamada finalizada e débito efetuado no valor de R$%.2f para número %s", valorLigacao, numero));
-	}
-
-
 }

@@ -9,6 +9,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "tarifa")
@@ -26,6 +27,9 @@ public class Tarifa implements Serializable {
 	
 	@Column(nullable = false)
 	private double valor;
+
+	@Transient
+	private Double valorLigacao;
 
 	public Long getCodigo() {
 		return codigo;
@@ -49,6 +53,14 @@ public class Tarifa implements Serializable {
 
 	public void setValor(double valor) {
 		this.valor = valor;
+	}
+	
+	public double calcularValorLigacao(double tempo) {
+		if(valorLigacao != null) {
+			return valorLigacao;
+		} 
+		valorLigacao = (tempo / 60) * valor;
+		return valorLigacao;
 	}
 
 	@Override
